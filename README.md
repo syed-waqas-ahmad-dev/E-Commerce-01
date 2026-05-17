@@ -1,91 +1,198 @@
-# Welcome to Your Miaoda Project
+# World-Shop E-Commerce Platform
 
-## Project Info
+A modern full-stack e-commerce web application built with React, TypeScript, Tailwind CSS, Supabase, and Stripe integration.
 
-## Project Directory
+## Features
 
+* User Authentication (Email & Google OAuth)
+* Secure Supabase Backend
+* Admin Dashboard
+* Product Management
+* Shopping Cart
+* Wishlist System
+* Order Management
+* Responsive Design
+* Role-Based Access Control
+* Stripe Payment Integration
+* Protected Routes
+* Modern UI/UX
+
+---
+
+# Tech Stack
+
+## Frontend
+
+* React
+* TypeScript
+* Tailwind CSS
+* React Router DOM
+* ShadCN UI
+* Lucide React Icons
+
+## Backend
+
+* Supabase
+* PostgreSQL
+* Row Level Security (RLS)
+* Supabase Auth
+
+## Payments
+
+* Stripe
+
+---
+
+# Project Structure
+
+```bash
+src/
+ ├── components/
+ ├── pages/
+ ├── contexts/
+ ├── layouts/
+ ├── hooks/
+ ├── db/
+ ├── lib/
+ └── routes/
 ```
-├── README.md # Documentation
-├── components.json # Component library configuration
-├── index.html # Entry file
-├── package.json # Package management
-├── postcss.config.js # PostCSS configuration
-├── public # Static resources directory
-│   ├── favicon.png # Icon
-│   └── images # Image resources
-├── src # Source code directory
-│   ├── App.tsx # Entry file
-│   ├── components # Components directory
-│   ├── context # Context directory
-│   ├── db # Database configuration directory
-│   ├── hooks # Common hooks directory
-│   ├── index.css # Global styles
-│   ├── layout # Layout directory
-│   ├── lib # Utility library directory
-│   ├── main.tsx # Entry file
-│   ├── routes.tsx # Routing configuration
-│   ├── pages # Pages directory
-│   ├── services # Database interaction directory
-│   ├── types # Type definitions directory
-├── tsconfig.app.json # TypeScript frontend configuration file
-├── tsconfig.json # TypeScript configuration file
-├── tsconfig.node.json # TypeScript Node.js configuration file
-└── vite.config.ts # Vite configuration file
+
+---
+
+# Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-## Tech Stack
+---
 
-Vite, TypeScript, React, Supabase
+# Installation
 
-## Development Guidelines
+Clone the repository:
 
-### How to edit code locally?
-
-You can choose [VSCode](https://code.visualstudio.com/Download) or any IDE you prefer. The only requirement is to have Node.js and npm installed.
-
-### Environment Requirements
-
+```bash
+git clone https://github.com/your-username/E-Commerce-01.git
 ```
-# Node.js ≥ 20
-# npm ≥ 10
+
+Move into the project directory:
+
+```bash
+cd E-Commerce-01
+```
+
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Run the development server:
+
+```bash
+pnpm run dev
+```
+
+---
+
+# Supabase Setup
+
+1. Create a Supabase project
+2. Run the SQL schema
+3. Configure Authentication
+4. Disable Email Confirmation
+5. Add RLS Policies
+6. Configure Google OAuth (Optional)
+
+---
+
+# Admin Setup
+
+After creating an account:
+
+1. Open Supabase Table Editor
+2. Go to `profiles` table
+3. Change role:
+
+```txt
+user → admin
+```
+
+---
+
+# Build for Production
+
+```bash
+pnpm run build
+```
+
+---
+
+# Deployment
+
+Recommended platforms:
+
+* Vercel
+* Netlify
+
+Add environment variables in deployment settings before deploying.
+
+---
+
+# Security Features
+
+* Row Level Security (RLS)
+* Protected Admin Routes
+* Secure Authentication
+* JWT Session Management
+* Supabase Policies
+
+---
+
+# Future Improvements
+
+* Product Reviews
+* Coupon System
+* Multi-Vendor Support
+* Analytics Dashboard
+* Real-Time Notifications
+* Mobile App Version
+
+---
+
+# Author
+
+Syed Waqas Ahmad
+
+* Software Engineer
+* Frontend Web Developer
+
+GitHub:
+https://github.com/syed-waqas-ahmad-dev
+
+---
+
+# License
+
+This project is licensed under the MIT License.
+
+---
+
+# Screenshots
+
+Add your screenshots here after deployment.
+
 Example:
-# node -v   # v20.18.3
-# npm -v    # 10.8.2
+
+```md
+![Homepage](./screenshots/home.png)
 ```
 
-### Installing Node.js on Windows
+---
 
-```
-# Step 1: Visit the Node.js official website: https://nodejs.org/, click download. The website will automatically suggest a suitable version (32-bit or 64-bit) for your system.
-# Step 2: Run the installer: Double-click the downloaded installer to run it.
-# Step 3: Complete the installation: Follow the installation wizard to complete the process.
-# Step 4: Verify installation: Open Command Prompt (cmd) or your IDE terminal, and type `node -v` and `npm -v` to check if Node.js and npm are installed correctly.
-```
+# Support
 
-### Installing Node.js on macOS
-
-```
-# Step 1: Using Homebrew (Recommended method): Open Terminal. Type the command `brew install node` and press Enter. If Homebrew is not installed, you need to install it first by running the following command in Terminal:
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-Alternatively, use the official installer: Visit the Node.js official website. Download the macOS .pkg installer. Open the downloaded .pkg file and follow the prompts to complete the installation.
-# Step 2: Verify installation: Open Command Prompt (cmd) or your IDE terminal, and type `node -v` and `npm -v` to check if Node.js and npm are installed correctly.
-```
-
-### After installation, follow these steps:
-
-```
-# Step 1: Download the code package
-# Step 2: Extract the code package
-# Step 3: Open the code package with your IDE and navigate into the code directory
-# Step 4: In the IDE terminal, run the command to install dependencies: npm i
-# Step 5: In the IDE terminal, run the command to start the development server: npm run dev -- --host 127.0.0.1
-# Step 6: if step 5 failed, try this command to start the development server: npx vite --host 127.0.0.1
-```
-
-### How to develop backend services?
-
-Configure environment variables and install relevant dependencies.If you need to use a database, please use the official version of Supabase.
-
-## Learn More
-
-You can also check the help documentation: Download and Building the app（ [https://intl.cloud.baidu.com/en/doc/MIAODA/s/download-and-building-the-app-en](https://intl.cloud.baidu.com/en/doc/MIAODA/s/download-and-building-the-app-en)）to learn more detailed content.
+If you like this project, consider giving it a star on GitHub.
