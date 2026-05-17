@@ -5,19 +5,19 @@ import { Button } from '@/components/ui/button';
 
 const slides = [
   {
-    image: '../../public/images/slide-img-1.png',
+    image: '/images/slide-img-1.png',
     title: 'Welcome to OMNI-GLOBE',
     subtitle: 'Discover Amazing Products',
     cta: 'Shop Now',
   },
   {
-    image: '../../public/images/slide-img-2.png',
+    image: '/images/slide-img-2.png',
     title: 'Latest Technology',
     subtitle: 'Premium Gadgets & Accessories',
     cta: 'Explore',
   },
   {
-    image: '../../public/images/slide-img-3.png',
+    image: 'images/slide-img-3.png',
     title: 'Special Offers',
     subtitle: 'Up to 50% Off Selected Items',
     cta: 'View Deals',
