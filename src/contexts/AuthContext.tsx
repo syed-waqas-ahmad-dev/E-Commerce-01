@@ -124,7 +124,7 @@ const signInWithOAuth = async (provider: 'google') => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/account`,
         queryParams: {
           prompt: 'select_account consent',
         },
