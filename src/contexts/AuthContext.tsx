@@ -87,7 +87,7 @@ const signUpWithEmail = async (
   username: string
 ) => {
   try {
-    // Check if username already exists
+    // Check username
     const { data: existingProfile } = await supabase
       .from('profiles')
       .select('username')
@@ -98,8 +98,8 @@ const signUpWithEmail = async (
       throw new Error('Username already taken');
     }
 
-    // Sign up with email
-    const { error: signUpError } = await supabase.auth.signUp({
+    // Create auth user
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -111,6 +111,24 @@ const signUpWithEmail = async (
 
     if (signUpError) {
       throw signUpError;
+    }
+
+    // Session refresh
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    setUser(session?.user ?? null);
+
+    // Small delay so DB trigger can create profile
+    if (session?.user) {
+      setTimeout(async () => {
+        const profileData = await getProfile(session.user.id);
+
+        if (profileData) {
+          setProfile(profileData);
+        }
+      }, 1000);
     }
 
     return { error: null };
