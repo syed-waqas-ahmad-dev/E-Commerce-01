@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,11 +9,12 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Package, Chrome, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Package, Chrome } from 'lucide-react'; 
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [activeTab, setActiveTab] = useState('signin'); 
 
   const { signInWithEmail, signUpWithEmail, signInWithOAuth } = useAuth();
   const navigate = useNavigate();
@@ -24,18 +25,20 @@ export default function LoginPage() {
   // ================= SIGN IN =================
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const email = String(formData.get('email') ?? '').trim();
+    const password = String(formData.get('password') ?? '');
+
+    // FIX: Validation before setting loading state (No stuck loading!)
+    if (!email || !password) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      const email = String(formData.get('email') ?? '').trim();
-      const password = String(formData.get('password') ?? '');
-
-      if (!email || !password) {
-        toast.error('Please fill in all fields');
-        return;
-      }
-
       const { error } = await signInWithEmail(email, password);
 
       if (error) {
@@ -60,42 +63,44 @@ export default function LoginPage() {
   // ================= SIGN UP =================
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // FIX: Checkbox validation before loading state
+    if (!agreedToTerms) {
+      toast.error('Please agree to the terms');
+      return;
+    }
+
+    const formData = new FormData(e.currentTarget);
+    const username = String(formData.get('username') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim();
+    const password = String(formData.get('password') ?? '');
+    const confirmPassword = String(formData.get('confirmPassword') ?? '');
+
+    // FIX: Input validations before loading state
+    if (!username || !email || !password || !confirmPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error('Invalid email format');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      if (!agreedToTerms) {
-        toast.error('Please agree to the terms');
-        return;
-      }
-
-      const formData = new FormData(e.currentTarget);
-
-      const username = String(formData.get('username') ?? '').trim();
-      const email = String(formData.get('email') ?? '').trim();
-      const password = String(formData.get('password') ?? '');
-      const confirmPassword = String(formData.get('confirmPassword') ?? '');
-
-      if (!username || !email || !password || !confirmPassword) {
-        toast.error('Please fill in all fields');
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        toast.error('Passwords do not match');
-        return;
-      }
-
-      if (password.length < 6) {
-        toast.error('Password must be at least 6 characters');
-        return;
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        toast.error('Invalid email format');
-        return;
-      }
-
       const { error } = await signUpWithEmail(email, password, username);
 
       if (error) {
@@ -107,10 +112,11 @@ export default function LoginPage() {
         return;
       }
 
-      // IMPORTANT FIX:
-      // No auto-login (prevents Supabase session bugs)
-      toast.success('Account created successfully!');
-      navigate('/login', { replace: true });
+      // Smooth Switch: Clear fields and go to signin
+      toast.success('Account created successfully! Please sign in.');
+      setActiveTab('signin'); 
+      setAgreedToTerms(false); 
+      e.currentTarget.reset(); 
 
     } catch (err: any) {
       toast.error(err.message || 'Signup failed');
@@ -122,13 +128,13 @@ export default function LoginPage() {
   // ================= GOOGLE AUTH =================
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
-
     try {
       const { error } = await signInWithOAuth('google');
-
       if (error) {
         toast.error(error.message || 'Google sign-in failed');
       }
+    } catch (err: any) {
+      toast.error(err.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -149,82 +155,79 @@ export default function LoginPage() {
         </CardHeader>
 
         <CardContent>
-          <Tabs defaultValue="signin">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="signin" disabled={isLoading}>Sign In</TabsTrigger>
+              <TabsTrigger value="signup" disabled={isLoading}>Sign Up</TabsTrigger>
+            </TabsList>
 
-            {/* ================= SIGN IN ================= */}
+            {/* ================= SIGN IN TAB ================= */}
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
-
-                <div>
-                  <Label>Email</Label>
-                  <Input name="email" type="email" disabled={isLoading} />
+                <div className="space-y-2">
+                  <Label htmlFor="signin-email">Email</Label>
+                  <Input id="signin-email" name="email" type="email" placeholder="name@example.com" disabled={isLoading} />
                 </div>
-
-                <div>
-                  <Label>Password</Label>
-                  <Input name="password" type="password" disabled={isLoading} />
+                <div className="space-y-2">
+                  <Label htmlFor="signin-password">Password</Label>
+                  <Input id="signin-password" name="password" type="password" placeholder="••••••••" disabled={isLoading} />
                 </div>
-
                 <Button className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Loading...' : 'Sign In'}
+                  {isLoading && activeTab === 'signin' ? 'Signing In...' : 'Sign In'}
                 </Button>
-
               </form>
-
-              <Separator className="my-6" />
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleSignIn}
-                disabled={isLoading}
-              >
-                <Chrome className="mr-2 h-4 w-4" />
-                Google Sign In
-              </Button>
             </TabsContent>
 
-            {/* ================= SIGN UP ================= */}
+            {/* ================= SIGN UP TAB ================= */}
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
-
-                <div>
-                  <Label>Username</Label>
-                  <Input name="username" type="text" disabled={isLoading} />
+                <div className="space-y-2">
+                  <Label htmlFor="signup-username">Username</Label>
+                  <Input id="signup-username" name="username" type="text" placeholder="johndoe" disabled={isLoading} />
                 </div>
-
-                <div>
-                  <Label>Email</Label>
-                  <Input name="email" type="email" disabled={isLoading} />
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email">Email</Label>
+                  <Input id="signup-email" name="email" type="email" placeholder="name@example.com" disabled={isLoading} />
                 </div>
-
-                <div>
-                  <Label>Password</Label>
-                  <Input name="password" type="password" disabled={isLoading} />
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">Password</Label>
+                  <Input id="signup-password" name="password" type="password" placeholder="Minimum 6 characters" disabled={isLoading} />
                 </div>
-
-                <div>
-                  <Label>Confirm Password</Label>
-                  <Input name="confirmPassword" type="password" disabled={isLoading} />
+                <div className="space-y-2">
+                  <Label htmlFor="signup-confirm">Confirm Password</Label>
+                  <Input id="signup-confirm" name="confirmPassword" type="password" placeholder="••••••••" disabled={isLoading} />
                 </div>
-
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 pt-1">
                   <Checkbox
+                    id="terms"
                     checked={agreedToTerms}
                     onCheckedChange={(v) => setAgreedToTerms(!!v)}
+                    disabled={isLoading}
                   />
-                  <span className="text-sm">I agree to terms</span>
+                  <label htmlFor="terms" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                    I agree to terms and conditions
+                  </label>
                 </div>
-
                 <Button className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating...' : 'Sign Up'}
+                  {isLoading && activeTab === 'signup' ? 'Creating Account...' : 'Sign Up'}
                 </Button>
-
               </form>
             </TabsContent>
-
           </Tabs>
+
+          <Separator className="my-6" />
+          
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+          >
+            <Chrome className="mr-2 h-4 w-4" />
+            Continue with Google
+          </Button>
         </CardContent>
 
       </Card>
